@@ -1,0 +1,95 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 300,
+  "description": "A scatter plot with tooltips",
+  "data": {
+    "url": "https://raw.githubusercontent.com/ChrlWilko/VegaLight/main/melbourne_housing_refined.csv"
+  },
+  "transform": [
+    {"filter": "toDate(datum.Date)"},
+    {
+      "calculate": "format(datum.Distance, '.1f') + ' km'",
+      "as": "DistanceLabel"
+    }
+  ],
+  "encoding": {
+    "x": {"field": "Distance", "type": "quantitative", "title": "Distance (km)"},
+    "y": {
+      "field": "Price", 
+      "type": "quantitative", 
+      "aggregate": "median",
+      "axis":{"title": "Median Price ($)","format": ".1s"}
+      }
+  },
+  "layer": [
+    {
+      "mark": {"type": "circle", "filled": true, "size": 60},
+      "selection": {
+        "type_highlight": {
+          "type": "multi",
+          "fields": ["Type"],
+          "bind": "legend"
+        }
+      },
+      
+      "encoding": {
+        "size": {
+          "condition": {
+            "test": "datum.Suburb1 === 'Middle Park' && datum.Distance < 4 || datum['Suburb1'] == 'Clayton' ||datum['Suburb1'] == 'Gisborne'"
+          },
+          "value": 10
+        },
+        "color": {"field": "Type", "type": "nominal", "title": "Property Type"},
+        "opacity": {
+          "condition": {
+            "selection": "type_highlight",
+            "test": "indexof(['Clayton', 'Middle Park', 'Gisborne'], datum['Suburb1']) > -1",
+            "value": 1
+          },
+          "value": 0.1
+        },
+        "tooltip": [
+          {"field": "Suburb1", "type": "nominal", "title": "Suburb"},
+          {"field": "DistanceLabel", "title": "Distance", "type": "nominal"},
+          {
+            "field": "Price",
+            "type": "quantitative",
+            "aggregate": "median",
+            "title": "Median Price",
+            "format": "$,.0f"
+          },
+          {"field": "Type", "type": "nominal", "title": "Property Type"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "dy": -10,
+        "fontSize": 15,
+        "fontStyle": "italic"
+      },
+      "transform": [{
+            "filter": "datum.Suburb1 === 'Middle Park' && datum.Distance < 4 || datum['Suburb1'] == 'Clayton' ||datum['Suburb1'] == 'Gisborne'" 
+      }
+      ],
+      "encoding": {
+        "text": {"field": "Suburb1", "type": "nominal"},
+        "color": {"value": "black"},
+        "opacity": {
+          "condition": {
+            "test":
+              "datum['Suburb1'] == 'Clayton' || datum['Suburb1'] == 'Middle Park' || datum['Suburb1'] == 'Gisborne'",
+            "value": 0.8
+          },
+          "value": 0
+        }
+      }
+    }
+  ],
+  "config": {}
+}
