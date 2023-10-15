@@ -4,7 +4,7 @@
   "height": 300,
   "description": "A scatter plot with tooltips",
   "data": {
-    "url": "https://raw.githubusercontent.com/ChrlWilko/VegaLight/main/melbourne_housing_refined.csv",
+    "url": "https://raw.githubusercontent.com/ChrlWilko/3179Assignment2/main/melbourne_housing_refined.csv",
     "format": {"type": "csv"}
   },
   "transform": [
